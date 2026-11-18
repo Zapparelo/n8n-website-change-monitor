@@ -1,0 +1,513 @@
+{
+  "name": "Website Change Monitor: visual diff alerts with screenshots (Apify)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Website Change Monitor (visual diff alerts)\n\n### How it works\nEvery 12 hours (or on a manual test run) the workflow starts the Apify Actor `pegton/website-screenshot-monitor` for the URLs in **Settings**. The Actor takes a full-page screenshot with cookie banners hidden (CSS only, nothing is clicked) and compares it with the previous capture of the same URL and device. Content that only moved, for example everything below a newly inserted banner, is matched to its new position, so only real changes count. Pages that changed by at least `changeThresholdPct` come back with a diff image (changes in red). **Build alert** also learns each page's usual noise and skips changes that are normal for that page. You get one e-mail (or Slack message) listing the changed pages. Unchanged pages are not returned and not charged.\n\n### Setup\n1. Apify account (the free plan includes $5 credit per month). Copy your API token: Console → Settings → API & Integrations.\n2. Create a **Header Auth** credential: name `Authorization`, value `Bearer YOUR_TOKEN`. Select it in **Start Apify run**, **Wait for run** and **Get results**.\n3. In **Settings**, enter your URLs, devices and e-mail addresses.\n4. Add an SMTP credential in **Send email alert**, or enable the Slack node.\n5. Click **Test workflow**. The first run saves the reference screenshots. Then activate.\n\n### Customization\nWatch one block only with `elementSelector` (e.g. `#pricing`), blank widgets with `hideSelectors`, or change the schedule. Cost: about $0.002 per changed page. `maxChargeUsd` caps each run.\n\n### Limitations\nPages behind a login or bot protection are captured as a normal visitor sees them.",
+        "height": 1000,
+        "width": 480,
+        "color": 1
+      },
+      "id": "6d8d929f-f980-45e9-86d2-21c220c93a46",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Trigger and settings\nRuns every 12 hours. All values you need to change are in **Settings**.",
+        "height": 480,
+        "width": 460,
+        "color": 7
+      },
+      "id": "f2f102ec-b7ce-4e90-9237-df3a9eaee838",
+      "name": "Section: trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Capture and compare on Apify\nStarts the screenshot run, waits until it has finished, then continues.",
+        "height": 480,
+        "width": 640,
+        "color": 7
+      },
+      "id": "d7ea935a-3080-4dcc-832f-5554cbc0a5a9",
+      "name": "Section: Apify",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Build and send the alert\nKeeps only real changes and sends one message with the diff images.",
+        "height": 500,
+        "width": 960,
+        "color": 7
+      },
+      "id": "c01802e7-6735-4c4a-91eb-7c7b53e5f2f1",
+      "name": "Section: alert",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "id": "dcbe6382-c9ad-484e-8fa2-b7e7ced0710e",
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3839f979-d829-4f0f-a71c-f918d1315f73",
+      "name": "Test run (manual)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "012385c6-3f4d-4cb9-940b-645310bde5d8",
+              "name": "urls",
+              "value": "https://www.notion.com/pricing, https://example.com",
+              "type": "string"
+            },
+            {
+              "id": "2b45687e-d6e9-433b-8974-4fbc85c3de0d",
+              "name": "devices",
+              "value": "desktop",
+              "type": "string"
+            },
+            {
+              "id": "ea8f6790-f9b7-4a52-8309-8bc7a68fb283",
+              "name": "changeThresholdPct",
+              "value": 0.2,
+              "type": "number"
+            },
+            {
+              "id": "b987d0cd-7037-4080-87ce-b72fcb525844",
+              "name": "suppressNoise",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "c041bfff-07cc-41d5-a225-7b2a400ca357",
+              "name": "hideSelectors",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "dc109620-176f-4216-8169-587c613f184d",
+              "name": "elementSelector",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c142d35a-18a6-421e-a276-677301b34e65",
+              "name": "maxChargeUsd",
+              "value": 0.1,
+              "type": "number"
+            },
+            {
+              "id": "480b79ee-3e75-42a2-ac8a-a90d78b332b3",
+              "name": "emailTo",
+              "value": "you@example.com",
+              "type": "string"
+            },
+            {
+              "id": "4913ad4f-0f32-470c-9f30-8c9cb682a0b7",
+              "name": "emailFrom",
+              "value": "watch@example.com",
+              "type": "string"
+            },
+            {
+              "id": "ebeefd9f-659a-4361-8bf9-2f509e9473ac",
+              "name": "slackChannel",
+              "value": "#site-changes",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3ae15bf8-4f0d-4175-bca8-bd81ce4ec7ca",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/pegton~website-screenshot-monitor/runs",
+        "options": {
+          "timeout": 120000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const list = v => String(v || '').split(/[\\n,;]+/).map(x => x.trim()).filter(Boolean);\nconst b = {\n  urls: list($json.urls),\n  devices: list($json.devices).map(d => d.toLowerCase()),\n  fullPage: true, format: 'jpeg', jpegQuality: 70, hideCookieBanners: true,\n  hideSelectors: list($json.hideSelectors),\n  compareWithPrevious: true, onlyChanged: true,\n  changeThresholdPct: Number($json.changeThresholdPct),\n  maxChargeUsd: Number($json.maxChargeUsd)\n};\nif (String($json.elementSelector || '').trim()) b.elementSelector = String($json.elementSelector).trim();\nreturn JSON.stringify(b); })() }}"
+      },
+      "id": "26f7a575-c2fe-4051-b33e-79fad595b943",
+      "name": "Start Apify run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $json.data.id }}",
+        "options": {
+          "timeout": 120000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        }
+      },
+      "id": "bb992a70-3b5f-4b06-9902-a6bfbab31a54",
+      "name": "Wait for run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb480a62-46ce-44f0-ae9c-769f5d88bc9f",
+              "leftValue": "={{ ['SUCCEEDED','FAILED','ABORTED','TIMED-OUT','TIMED_OUT'].includes($json.data.status) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "df785aee-361b-42a0-b6ff-2c74802e187e",
+      "name": "Run finished?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items",
+        "options": {
+          "timeout": 120000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        }
+      },
+      "id": "cfabdcce-664e-4384-b6c4-46e8bd4c2b8c",
+      "name": "Get results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        280
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst esc = t => String(t ?? '').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));\nconst num = n => (n === null || n === undefined || n === '') ? '–' : Number(n).toLocaleString('en-US');\nconst BRAND = { violet: '#7B2FF7', orange: '#FF7A1A', ink: '#1d1530', muted: '#6b6480', line: '#ece8f3' };\nconst shell = (title, subtitle, body, footer) => `<!doctype html><html><body style=\"margin:0;background:#f6f4fa;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${BRAND.ink}\">\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"center\" style=\"padding:24px 12px\">\n<table role=\"presentation\" width=\"640\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:640px;background:#fff;border-radius:14px;overflow:hidden\">\n<tr><td style=\"background:linear-gradient(90deg,${BRAND.violet},${BRAND.orange});background-color:${BRAND.violet};padding:22px 26px;color:#fff\">\n<div style=\"font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.85\">${esc(subtitle)}</div>\n<div style=\"font-size:22px;font-weight:700;margin-top:4px\">${esc(title)}</div></td></tr>\n<tr><td style=\"padding:22px 26px\">${body}</td></tr>\n<tr><td style=\"padding:14px 26px;border-top:1px solid ${BRAND.line};font-size:12px;color:${BRAND.muted}\">${footer || ''}</td></tr>\n</table></td></tr></table></body></html>`;\nconst stat = (label, value) => `<td style=\"padding:10px 12px;background:#faf8fd;border-radius:10px;text-align:center\"><div style=\"font-size:20px;font-weight:700\">${value}</div><div style=\"font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:.06em\">${esc(label)}</div></td>`;\nconst stats = arr => `<table role=\"presentation\" width=\"100%\" cellspacing=\"6\" cellpadding=\"0\" style=\"margin:0 0 14px\"><tr>${arr.map(([l,v]) => stat(l,v)).join('')}</tr></table>`;\n\nconst s = $('Settings').first().json;\nconst run = $('Wait for run').last().json.data;\nconst rows = $input.all().map(i => i.json).filter(r => r && r.url);\nconst changedAll = rows.filter(r => r.changed === true).sort((a, b) => (b.changePct || 0) - (a.changePct || 0));\n// Noise learning: many pages shift a little on every load (carousels, counters, ads, layout shifts).\n// We keep the last 5 change values per page (workflow static data, saved on scheduled runs) and, once 3 exist,\n// only alert when a change is clearly above what the page usually does.\nconst memo = $getWorkflowStaticData('global');\nmemo.hist = memo.hist || {};\nconst median = a => { const b = [...a].sort((x, y) => x - y); const m = Math.floor(b.length / 2); return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };\nconst ignored = [];\nconst changed = [];\nfor (const r of changedAll) {\n  const k = `${r.url}|${r.device}`;\n  const prior = memo.hist[k] || [];\n  r.typicalPct = prior.length ? Math.round(10 * median(prior)) / 10 : null;\n  if (s.suppressNoise !== false && prior.length >= 3 && r.changePct <= Math.max(1.5 * r.typicalPct, r.typicalPct + 2)) ignored.push(r); else changed.push(r);\n}\nif (run.status === 'SUCCEEDED') for (const r of changedAll) { const k = `${r.url}|${r.device}`; memo.hist[k] = [...(memo.hist[k] || []), Number(r.changePct)].slice(-5); }\nconst baseline = rows.filter(r => !r.errorCode && (r.changed === null || r.changed === undefined));\nconst errors = rows.filter(r => r.errorCode);\nconst ago = d => { if (!d) return 'the last check'; const m = Math.round((Date.now() - new Date(d).getTime()) / 6e4); return m < 90 ? `the check ${m} min ago` : m < 2880 ? `the check ${Math.round(m / 60)} h ago` : `the check ${Math.round(m / 1440)} days ago`; };\nconst host = u => String(u).replace(/^https?:\\/\\//, '').replace(/\\/$/, '');\nlet body = stats([['changed', changed.length], ['first capture', baseline.length], ['errors', errors.length]]);\nfor (const r of changed) {\n  body += `<div style=\"margin:16px 0 22px\">\n  <div style=\"font-size:15px;font-weight:700\">${esc(r.title || host(r.url))}</div>\n  <div style=\"font-size:12px;color:${BRAND.muted};margin:2px 0 8px\"><a href=\"${esc(r.finalUrl || r.url)}\" style=\"color:${BRAND.violet}\">${esc(host(r.finalUrl || r.url))}</a> · ${esc(r.device)} · <b style=\"color:#b42318\">${r.changePct}% of the page changed</b> since ${esc(ago(r.previousCapturedAt))}${r.typicalPct !== null ? ` (typical: ${r.typicalPct}%)` : ''}</div>\n  ${r.diffImageUrl ? `<a href=\"${esc(r.diffImageUrl)}\"><img src=\"${esc(r.diffImageUrl)}\" width=\"588\" alt=\"Changes highlighted in red\" style=\"width:100%;max-width:588px;height:auto;border:1px solid ${BRAND.line};border-radius:8px\"></a>` : ''}\n  <div style=\"font-size:12px;margin-top:6px\"><a href=\"${esc(r.screenshotUrl)}\" style=\"color:${BRAND.orange}\">Current screenshot</a>${r.diffImageUrl ? ` · <a href=\"${esc(r.diffImageUrl)}\" style=\"color:${BRAND.orange}\">Diff (red = changed)</a>` : ''}</div></div>`;\n}\nif (ignored.length) body += `<p style=\"font-size:12px;color:${BRAND.muted};margin:10px 0\">Usual noise, not alerted: ${ignored.map(r => `${esc(host(r.url))} (${r.changePct}%, typical ${r.typicalPct}%)`).join(', ')}</p>`;\nif (baseline.length) body += `<h3 style=\"font-size:15px;margin:18px 0 6px\">Now watching</h3><p style=\"font-size:12px;color:${BRAND.muted};margin:0 0 6px\">First capture saved as the reference. From the next run on you only hear about these pages when they change by at least ${esc(s.changeThresholdPct)}%.</p>` +\n  baseline.map(r => `<div style=\"font-size:13px;padding:3px 0\">✓ <a href=\"${esc(r.screenshotUrl)}\" style=\"color:${BRAND.violet}\">${esc(r.title || host(r.url))}</a> <span style=\"color:${BRAND.muted}\">(${esc(host(r.url))}, ${esc(r.device)})</span></div>`).join('');\nif (errors.length) body += `<h3 style=\"font-size:15px;margin:18px 0 6px;color:#b42318\">Could not capture</h3>` + errors.map(r => `<div style=\"font-size:12px\">⚠ ${esc(host(r.url))} (${esc(r.device)}): ${esc(r.errorMessage || r.errorCode)}</div>`).join('');\nif (run.status !== 'SUCCEEDED') body += `<p style=\"font-size:12px;color:#b42318\">⚠ The Apify run ended with status ${esc(run.status)}.</p>`;\nconst subject = changed.length ? `${changed.length} page${changed.length === 1 ? '' : 's'} changed: ${changed.slice(0, 2).map(r => host(r.url)).join(', ')}${changed.length > 2 ? ' …' : ''}`\n  : (baseline.length ? `Website monitor is live: ${baseline.length} page${baseline.length === 1 ? '' : 's'} saved as reference` : `Website monitor: ${errors.length} page(s) could not be captured`);\nconst html = shell(subject, 'Website Change Monitor · ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC', body,\n  'Free template by pegton · screenshots by pegton/website-screenshot-monitor on Apify. More templates: <a href=\"https://pegton.gumroad.com\" style=\"color:' + BRAND.violet + '\">pegton.gumroad.com</a>');\nconst slackText = `*${subject}*\\n` + changed.map(r => `• <${r.finalUrl || r.url}|${host(r.url)}> (${r.device}): ${r.changePct}% changed · <${r.diffImageUrl}|diff>`).join('\\n');\nreturn [{ json: { subject, html, slackText, reportCount: changed.length + baseline.length + errors.length, changed: changed.length, runStatus: run.status } }];\n"
+      },
+      "id": "30b550a9-f0ed-4a58-8713-2bd1b13afddb",
+      "name": "Build alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2085e5d-6af7-4a7d-9607-1ce9d0834081",
+              "leftValue": "={{ $json.reportCount > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "da003e73-1178-453d-a0ed-c14ce1c9eac0",
+      "name": "Anything to report?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1620,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Settings').first().json.emailFrom }}",
+        "toEmail": "={{ $('Settings').first().json.emailTo }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "68fb1c68-30f4-4eb9-b9d8-9ac87afa0a37",
+      "name": "Send email alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1860,
+        180
+      ],
+      "webhookId": "2c817b4d-0a6f-420a-bdb9-a399010aa622"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.slackChannel }}",
+          "mode": "name"
+        },
+        "text": "={{ $json.slackText }}",
+        "otherOptions": {}
+      },
+      "id": "de57c8d3-2b6d-4b99-9aa3-6ff709062027",
+      "name": "Post to Slack (optional)",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1860,
+        380
+      ],
+      "disabled": true,
+      "webhookId": "655567c6-9fa9-448f-b3f2-60bad53ae9c8"
+    }
+  ],
+  "connections": {
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test run (manual)": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "Start Apify run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Apify run": {
+      "main": [
+        [
+          {
+            "node": "Wait for run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for run": {
+      "main": [
+        [
+          {
+            "node": "Run finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run finished?": {
+      "main": [
+        [
+          {
+            "node": "Get results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get results": {
+      "main": [
+        [
+          {
+            "node": "Build alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build alert": {
+      "main": [
+        [
+          {
+            "node": "Anything to report?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anything to report?": {
+      "main": [
+        [
+          {
+            "node": "Send email alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack (optional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
