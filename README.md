@@ -1,5 +1,9 @@
 # Website Change Monitor for n8n (free workflow)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![n8n workflow](https://img.shields.io/badge/n8n-workflow-EA4B71.svg)
+
+Guide with measurements: [Free website change monitor in n8n, and why a 1 % threshold alerts on most pages](https://zapparelo.github.io/en/n8n-website-change-monitor-visual-diff/)
+
 Every 12 hours this n8n workflow takes a full-page screenshot of each page you watch and compares it with the previous one. When a page really changed, you get one e-mail (or Slack message) with a diff image, changes in red.
 
 ![Workflow](images/workflow.png)
@@ -8,7 +12,7 @@ Every 12 hours this n8n workflow takes a full-page screenshot of each page you w
 
 ## Why another change monitor
 
-Most screenshot diffs compare pixel by pixel. When a cookie notice, a sale banner or a longer headline pushes the page down by a few pixels, everything below counts as changed, and you get an alert every day. The screenshots here are compared by an Actor that aligns the rows first, so moved content is matched to its new position:
+Most screenshot diffs compare pixel by pixel. When a cookie notice, a sale banner or a longer headline pushes the page down by a few pixels, everything below counts as changed, and you get an alert every day. The screenshots here are compared by an Actor that aligns the rows first, so moved content is matched to its new position. The algorithm is open source as [shiftdiff](https://github.com/Zapparelo/shiftdiff) (Python, MIT):
 
 ![Old vs new diff](images/diff-before-after.png)
 
